@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG Engine Studio</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- SVG Engine Web Component -->
+  <script src="https://unpkg.com/@codefrydev/svg-engine/dist/wc.iife.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #09090b; /* Tailwind zinc-950 */
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Ensure the engine fills its container */
+    codefrydev-svg-engine {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Clean up standard select dropdown background */
+    select option {
+      background: #09090b;
+      color: #e4e4e7;
+    }
+  </style>
+</head>
+
+<body class="text-zinc-300 bg-zinc-950 flex flex-col h-screen w-screen overflow-hidden">
+
+  <!-- Minimalist Header -->
+  <header class="h-14 border-b border-white/5 px-4 flex items-center justify-between shrink-0 z-10 bg-zinc-950/80 backdrop-blur-md">
+    
+    <div class="flex items-center gap-4">
+      <h1 class="text-sm font-semibold text-zinc-100 tracking-wide flex items-center gap-2">
+        <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+        SVG Engine
+      </h1>
+      <div class="h-4 w-px bg-white/10"></div>
+      
+      <div class="relative flex items-center">
+        <select
+          id="presetSelect"
+          class="appearance-none bg-transparent hover:bg-zinc-800/50 text-zinc-300 text-sm border border-transparent hover:border-zinc-700/50 rounded-md pl-3 pr-8 py-1.5 outline-none focus:ring-1 focus:ring-zinc-600 transition-all cursor-pointer"
+        >
+          <option value="mechanics">Mechanics</option>
+          <option value="circuit">Circuit</option>
+          <option value="thermo">Thermo</option>
+          <option value="magnetism">Magnetism</option>
+          <option value="light">Light</option>
+          <option value="waveOscillation">Wave</option>
+          <option value="rotation">Rotation</option>
+          <option value="graph">Graph</option>
+          <option value="electrostatics">Electrostatics</option>
+          <option value="chemistry">Chemistry</option>
+        </select>
+        <svg class="w-3.5 h-3.5 text-zinc-500 absolute right-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5">
+      <button id="loadBtn" class="text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+        Load
+      </button>
+      <button id="saveBtn" class="text-xs font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+        Save
+      </button>
+      <div class="h-3 w-px bg-white/10 mx-1"></div>
+      <button id="exportBtn" class="text-xs font-medium text-zinc-950 bg-zinc-200 hover:bg-white px-3 py-1.5 rounded-md transition-colors flex items-center gap-1.5 ml-1 shadow-sm">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+        Export
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Canvas seamlessly filling remaining space -->
+  <main class="flex-1 w-full relative bg-[#09090b]">
+    <codefrydev-svg-engine
+      id="editor"
+      preset="mechanics"
+      class="absolute inset-0"
+    ></codefrydev-svg-engine>
+  </main>
+
+  <!-- Modern Centered Pill Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-zinc-800/95 backdrop-blur text-zinc-100 px-4 py-2.5 rounded-full shadow-lg border border-white/10 transition-all duration-300 transform translate-y-10 opacity-0 z-50 pointer-events-none flex items-center gap-2.5 text-sm font-medium">
+    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toastMsg">Notification</span>
+  </div>
+
+  <script>
+  // DOM Elements
+  const editor = document.getElementById("editor");
+  const presetSelect = document.getElementById("presetSelect");
+  const toast = document.getElementById("toast");
+  const toastMsg = document.getElementById("toastMsg");
+
+  // Custom Toast Notification System (replaces alerts)
+  let toastTimeout;
+  function showToast(message, isError = false) {
+    toastMsg.textContent = message;
+    
+    // Adjust icon/colors based on error state
+    const svg = toast.querySelector('svg');
+    if (isError) {
+      svg.classList.replace('text-emerald-400', 'text-red-400');
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+    } else {
+      svg.classList.replace('text-red-400', 'text-emerald-400');
+      svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+    }
+
+    // Show toast
+    toast.classList.remove("translate-y-10", "opacity-0");
+    
+    // Hide toast after 3 seconds
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.classList.add("translate-y-10", "opacity-0");
+    }, 3000);
+  }
+
+  /* -------------------------------- */
+  /* Initial Diagram Data             */
+  /* -------------------------------- */
+  const initialData = [
+    {
+      id: 1,
+      type: "block",
+      x1: 100,
+      y1: 200,
+      x2: 220,
+      y2: 280,
+      label: "m"
+    }
+  ];
+
+  // Initialize the editor with starting data once the element is ready
+  // Using a slight timeout or listening for component mount is sometimes 
+  // necessary for Web Components, but inline script often executes fine.
+  customElements.whenDefined('codefrydev-svg-engine').then(() => {
+    editor.setData(initialData);
+  });
+
+  /* -------------------------------- */
+  /* Export JSON Handler              */
+  /* -------------------------------- */
+  document.getElementById("exportBtn").addEventListener("click", () => {
+    try {
+      const data = editor.getData();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = "diagram-export.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showToast("Diagram exported successfully!");
+    } catch (err) {
+      showToast("Failed to export diagram.", true);
+      console.error(err);
+    }
+  });
+
+  /* -------------------------------- */
+  /* Save to LocalStorage             */
+  /* -------------------------------- */
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    try {
+      const data = editor.getData();
+      localStorage.setItem("svg-engine-diagram", JSON.stringify(data));
+      showToast("Diagram saved to local storage!");
+    } catch (err) {
+      showToast("Failed to save diagram.", true);
+      console.error(err);
+    }
+  });
+
+  /* -------------------------------- */
+  /* Load from LocalStorage           */
+  /* -------------------------------- */
+  document.getElementById("loadBtn").addEventListener("click", () => {
+    try {
+      const raw = localStorage.getItem("svg-engine-diagram");
+      if (!raw) {
+        showToast("No saved diagram found.", true);
+        return;
+      }
+      const data = JSON.parse(raw);
+      editor.setData(data);
+      showToast("Diagram loaded successfully!");
+    } catch (err) {
+      showToast("Failed to load diagram.", true);
+      console.error(err);
+    }
+  });
+
+  /* -------------------------------- */
+  /* Preset Change Handler            */
+  /* -------------------------------- */
+  presetSelect.addEventListener("change", (e) => {
+    const preset = e.target.value;
+    editor.setAttribute("preset", preset);
+    editor.clear();
+    showToast(`Switched to ${preset} mode.`);
+  });
+
+</script>
+
+</body>
+</html>
